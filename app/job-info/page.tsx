@@ -4,5 +4,5 @@ export default function JobInfo(){
             <p>hello world</p>
         </div>
     )
-
 }
+
