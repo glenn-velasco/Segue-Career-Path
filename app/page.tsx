@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { UploadCloud, Send, X } from "lucide-react"
+import { UploadCloud, Send, X, Bot } from "lucide-react"
 import Link from "next/link"
 import { handleResume } from "@/lib/actions";
+import { InterviewChat } from "@/components/ui/interview-chat";
 
 export default function JobBoard() {
 
@@ -23,6 +24,8 @@ export default function JobBoard() {
   const ITEMS_PER_PAGE = 5;
   const [error, setError] = React.useState<string | null>(null)
   const [isMounted, setIsMounted] = React.useState(false)
+  const [selectedJob, setSelectedJob] = React.useState<any | null>(null)
+  const [isInterviewing, setIsInterviewing] = React.useState(false)
 
   React.useEffect(() => {
     setIsMounted(true)
@@ -141,10 +144,10 @@ export default function JobBoard() {
         <div className="shrink-0 pb-2 border-b border-transparent">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
                 Open Positions
               </h1>
-              <p className="text-slate-500 dark:text-slate-400 text-md sm:text-lg mt-1">
+              <p className="text-zinc-500 dark:text-zinc-400 text-md sm:text-lg mt-1">
                 Find your next role and help us build the future.
               </p>
             </div>
@@ -166,15 +169,15 @@ export default function JobBoard() {
 
         <div className="flex-1 overflow-y-auto space-y-3 no-scroll-bar py-2 pr-2">
           {currentJobs.map((item, index) => (
-            <Link key={indexOfFirstJob + index} href="/job-info">
-              <Card className="shadow-sm hover:shadow-md transition-shadow border-slate-200 dark:border-slate-800 m-1">
+            <div key={indexOfFirstJob + index} onClick={() => setSelectedJob(item)} className="cursor-pointer">
+              <Card className="shadow-sm hover:shadow-md transition-shadow border-zinc-200 dark:border-zinc-800 m-1">
                 <CardHeader className="pb-3 px-4 pt-4 sm:px-6 sm:pt-6">
                   <div className="flex flex-row items-start justify-between gap-4">
                     <div className="space-y-1">
-                      <CardTitle className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-100 leading-tight">
+                      <CardTitle className="text-lg sm:text-xl font-semibold text-zinc-900 dark:text-zinc-100 leading-tight">
                         {item.title || "Untitled Position"}
                       </CardTitle>
-                      <CardDescription className="text-sm font-medium text-slate-500">
+                      <CardDescription className="text-sm font-medium text-zinc-500">
                         {item.companyName || item.advertiser?.description || "Unknown Company"} • {item.locations?.[0]?.label || "Remote"}
                       </CardDescription>
                     </div>
@@ -186,20 +189,20 @@ export default function JobBoard() {
                 </CardHeader>
 
                 <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6 pt-0">
-                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2">
+                  <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed line-clamp-2">
                     {item.teaser || "No description available."}
                   </p>
                 </CardContent>
               </Card>
-            </Link>
+            </div>
           ))}
           {!isPending && jobs.length === 0 && !error && (
             <div className="text-center py-16 px-4">
-              <UploadCloud className="mx-auto h-12 w-12 text-slate-200 dark:text-slate-800 mb-4" />
-              <p className="text-slate-600 dark:text-slate-300 text-lg font-medium">
+              <UploadCloud className="mx-auto h-12 w-12 text-zinc-200 dark:text-zinc-800 mb-4" />
+              <p className="text-zinc-600 dark:text-zinc-300 text-lg font-medium">
                 {fileName ? "No matching jobs found" : "Ready to find your next role?"}
               </p>
-              <p className="text-slate-400 dark:text-slate-500 mt-1 max-w-sm mx-auto">
+              <p className="text-zinc-400 dark:text-zinc-500 mt-1 max-w-sm mx-auto">
                 {fileName
                   ? "Try uploading a different resume or wait for new positions."
                   : "Upload your resume using the form below to instantly discover top roles that fit your experience."}
@@ -214,7 +217,7 @@ export default function JobBoard() {
         </div>
 
         {totalPages > 1 && !isPending && (
-          <div className="shrink-0 border-t border-slate-200 dark:border-slate-800 flex justify-center items-center gap-2 py-3 mt-1">
+          <div className="shrink-0 border-t border-zinc-200 dark:border-zinc-800 flex justify-center items-center gap-2 py-3 mt-1">
             <Button
               variant="ghost"
               size="sm"
@@ -250,15 +253,15 @@ export default function JobBoard() {
         )}
 
         <div className="shrink-0 pb-2">
-          <div className="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-3 sm:p-4 shadow-sm">
+          <div className="border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 sm:p-4 shadow-sm">
             <form action={handleResumeSubmit} className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <input type="file" name="resume" className="hidden" ref={fileInputRef} onChange={handleFileChange} accept=".pdf,.docx" />
 
               <div className="flex-1 text-left w-full sm:w-auto">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <div>
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">AI Role Match</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Upload resume or paste portfolio link.</p>
+                    <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">AI Role Match</h3>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Upload resume or paste portfolio link.</p>
                   </div>
 
                   {!fileName && (
@@ -268,7 +271,7 @@ export default function JobBoard() {
                       placeholder="https://yourportfolio.com"
                       value={portfolioUrl}
                       onChange={(e) => setPortfolioUrl(e.target.value)}
-                      className="h-8 text-xs max-w-xs flex-1 bg-white dark:bg-slate-950"
+                      className="h-8 text-xs max-w-xs flex-1"
                     />
                   )}
                 </div>
@@ -292,7 +295,7 @@ export default function JobBoard() {
                         localStorage.removeItem("current_page")
                         localStorage.removeItem("detected_expertise")
                       }}
-                      className="text-slate-400 hover:text-red-500 transition-colors p-0.5 rounded-full hover:bg-red-50 dark:hover:bg-red-950 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-red-200"
+                      className="text-zinc-400 hover:text-red-500 transition-colors p-0.5 rounded-full hover:bg-red-50 dark:hover:bg-red-950 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-red-200"
                       title="Remove file"
                     >
                       <X className="w-3 h-3" />
@@ -315,6 +318,72 @@ export default function JobBoard() {
         </div>
 
       </div>
+
+      {selectedJob && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm" onClick={() => { setSelectedJob(null); setIsInterviewing(false); }}>
+          <div className={`bg-white dark:bg-zinc-950 rounded-xl shadow-xl w-full ${isInterviewing ? 'max-w-4xl h-[85vh]' : 'max-w-2xl max-h-[90vh]'} flex flex-col overflow-hidden border border-zinc-200 dark:border-zinc-800 transition-all duration-300`} onClick={e => e.stopPropagation()}>
+            
+            {isInterviewing ? (
+              <InterviewChat 
+                jobTitle={selectedJob.title || "Untitled Position"}
+                companyName={selectedJob.companyName || selectedJob.advertiser?.description}
+                jobDescription={selectedJob.teaser}
+                onClose={() => setIsInterviewing(false)}
+              />
+            ) : (
+              <>
+                <div className="flex items-center justify-between p-4 sm:p-6 border-b border-zinc-100 dark:border-zinc-800">
+                  <h2 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-50 line-clamp-1 pr-4">
+                    {selectedJob.title || "Untitled Position"}
+                  </h2>
+                  <button onClick={() => setSelectedJob(null)} className="shrink-0 p-2 -mr-2 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="overflow-y-auto p-4 sm:p-6 flex-1">
+                  <div className="flex flex-wrap items-center gap-3 mb-6">
+                    <span className="inline-flex items-center rounded-md bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 text-sm font-medium text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700">
+                      {selectedJob.companyName || selectedJob.advertiser?.description || "Unknown Company"}
+                    </span>
+                    <span className="inline-flex items-center rounded-md bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 text-sm font-medium text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700">
+                      {selectedJob.locations?.[0]?.label || "Remote"}
+                    </span>
+                    <span className="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-900/30 px-2.5 py-1 text-sm font-medium text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                      {selectedJob.workTypes?.[0] || "Full-time"}
+                    </span>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-2">Description</h3>
+                      <div className="text-zinc-600 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap">
+                        {selectedJob.teaser || "No description available."}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-4 sm:p-6 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 flex flex-wrap justify-between items-center gap-3">
+                  <Button variant="outline" className="text-blue-600 border-blue-200 dark:border-blue-800 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50" onClick={() => setIsInterviewing(true)}>
+                    <Bot className="w-4 h-4 mr-2" />
+                    Practice Interview
+                  </Button>
+                  
+                  <div className="flex gap-3">
+                    <Button variant="ghost" onClick={() => setSelectedJob(null)}>
+                      Close
+                    </Button>
+                    {selectedJob.url && (
+                      <Button onClick={() => window.open(selectedJob.url, '_blank')}>
+                        Apply Now
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }

@@ -47,7 +47,7 @@ export async function handleResume(formData: FormData) {
         let searchQuery = "";
         let detectedExpertise = "";
 
-        const apiKey = "AIzaSyBfWmUcKGMtnodgPX6hP_LoZqAD4kl94to";
+        const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
         if (apiKey) {
             try {
@@ -74,7 +74,7 @@ export async function handleResume(formData: FormData) {
             `https://jobstreet.p.rapidapi.com/search?query=${encodeURIComponent(searchQuery)}&countryCode=my`,
             {
                 headers: {
-                    'x-rapidapi-key': "7ae1bfe668msh42c7a53eee807d5p1af5b6jsnb9edd51c4541",
+                    'x-rapidapi-key': process.env.RAPIDAPI_KEY || "",
                     'x-rapidapi-host': 'jobstreet.p.rapidapi.com'
                 }
             }

@@ -15,6 +15,18 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2: 
+3: ## Environment Variables
+4: 
+5: To run this project, you will need to add the following environment variables to your `.env` file:
+6: 
+7: `NEXT_PUBLIC_GEMINI_API_KEY` - Your Google Gemini API Key
+8: `RAPIDAPI_KEY` - Your RapidAPI Key for Jobstreet API
+9: 
+10: You can refer to `.env.example` for the format.
+11: 
+12: ## Usage
+13: 
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
