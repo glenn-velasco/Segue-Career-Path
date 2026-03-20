@@ -171,7 +171,7 @@ export default function JobBoard() {
             <div className="flex flex-col items-center justify-center text-center mt-10">
             <h1 className="text-xl sm:text-5xl font-bold text-white drop-shadow-md ">
               Open Positions
-            </h1>{error}
+            </h1>
             <p className="text-slate-200/90 text-xl sm:text-xl mt-3">
               Begin Your Career Now
             </p>
@@ -194,7 +194,7 @@ export default function JobBoard() {
                 
               </div>
               {error &&
-              <div className="absolute w-full flex flex-col items-center justify-between space-y-2">
+              <div className="fixed w-full flex flex-col items-center justify-between space-y-2 z-[-1]">
                 <Card className=" group relative overflow-hidden bg-white/15 backdrop-blur-md border border-white shadow-xl p-5 mb-40"> 
                     <p className="text-[#ff2222] text-xl font-bold">{error}</p>
                 </Card>
