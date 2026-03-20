@@ -12,7 +12,7 @@ import { handleResume } from "@/lib/actions";
 import { InterviewChat } from "@/components/ui/interview-chat";
 
 export default function JobBoard() {
-
+  
   const [fileName, setFileName] = React.useState<string | null>(null)
   const fileInputRef = React.useRef<HTMLInputElement>(null)
   const [jobs, setJobs] = React.useState<any[]>([])
@@ -45,6 +45,20 @@ export default function JobBoard() {
       }
     }
   }, [])
+
+ // Add this block after your second useEffect
+  React.useEffect(() => {
+    if (isMounted && portfolioUrl === "" && !fileName) {
+      // Clear all results from the UI
+      setJobs([]);
+      setDetectedExpertise(null);
+      setError(null);
+      // Clear memory so it doesn't come back on refresh
+      localStorage.removeItem("job_list");
+      localStorage.removeItem("detected_expertise");
+      localStorage.removeItem("current_page");
+    }
+  }, [portfolioUrl, fileName, isMounted]);
 
   React.useEffect(() => {
     if (!isMounted) return
@@ -87,7 +101,7 @@ export default function JobBoard() {
 
       const file = formData.get("resume") as File | null;
 
-      if (fileName && (!file || file.size === 0) && !portfolioUrl) {
+      if (fileName && (!file || file.size === 0) || !portfolioUrl) {
 
         setError("Please re-select your resume file. Browsers clear file selections when the page is reloaded.");
 
@@ -227,11 +241,10 @@ export default function JobBoard() {
                         {item.title || "Untitled Position"}
                       </CardTitle>
                       <CardDescription className="text-sm text-white">
-                        {item.companyName || item.advertiser?.description || "Unknown Company"} • {item.locations?.[0]?.label || "Location"} | <span className="font-extrabold">{item.workArrangements?.data[0]?.label.text || "Arrangements"}</span>
+                        {item.companyName || item.advertiser?.description || "Unknown Company"} • {item.locations?.[0]?.label || "Location"} | <span className="font-extrabold">{item.workArrangements.data[0].label.text || "Arrangements"}</span>
 
                       </CardDescription>
                     </div>
-
                     <div className="flex items-center gap-4 shrink-0">
                       <span className="shrink-0 inline-flex items-center rounded-lg bg-[#326DB0] px-3 py-1 text-xs font-bold text-white">
                         {item.workTypes?.[0] || "Full-Time"} 
@@ -276,12 +289,13 @@ export default function JobBoard() {
         {totalPages > 1 && !isPending && (
           <div className="shrink-0 border-t border-white/20 flex justify-center items-center gap-2 py-2 mt-1">
             <Button
+            
               variant="ghost"
               size="sm"
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
             >
-              <ChevronLeft/>
+              Prev
             </Button>
 
             <div className="flex gap-1 flex-wrap justify-center">
