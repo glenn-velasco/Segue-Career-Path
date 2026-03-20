@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { UploadCloud, Send, X, Bot } from "lucide-react"
+import { UploadCloud, Send, X, Bot, ChevronLeft, ChevronRight} from "lucide-react"
 import Link from "next/link"
 import { handleResume } from "@/lib/actions";
 import { InterviewChat } from "@/components/ui/interview-chat";
@@ -138,75 +138,132 @@ export default function JobBoard() {
   const totalPages = Math.ceil(jobs.length / ITEMS_PER_PAGE);
 
   return (
-    <div className="h-screen flex flex-col pt-2 sm:pt-4 pb-2 sm:pb-4 px-4 sm:px-6 lg:px-8 font-sans overflow-hidden">
-      <div className="mx-auto w-full max-w-3xl flex flex-col h-full min-h-0">
+    <div className="h-screen flex flex-col py-[10] px-[20] lg:px-8 font-sans overflow-hidden 
+    bg-linear-to-b from-[#0e2931] via-[#3ea8a7] to-[#0e2931]">
 
-        <div className="shrink-0 pb-2 border-b border-transparent">
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                Open Positions
-              </h1>
-              <p className="text-zinc-500 dark:text-zinc-400 text-md sm:text-lg mt-1">
-                Find your next role and help us build the future.
-              </p>
+      <div 
+        className="absolute inset-0 z-0 opacity-35 pointer-events-none" 
+        style={{ 
+          backgroundImage: `url('blob_bg.svg')`, 
+          backgroundSize: 'cover',
+          backgroundPosition: 'center' 
+        }}
+      />
+        
+      <div className="mx-auto my-auto w-full max-w-3xl flex flex-col justify-center h-full min-h-0 m z-1">
+        <div className="shrink-0">
+          {(jobs.length == 0 )&& (
+            <div className="flex flex-col items-center justify-center text-center mb-40">
+            <h1 className="text-3xl sm:text-6xl font-bold text-white drop-shadow-md">
+              Begin Your Career Now
+            </h1>
+            <p className="text-slate-200/90 text-1xl sm:text-2xl mt-3">
+              Find Your Next Role and Build Our Future
+            </p>
+            
+            <div className="absolute top-4 right-4 sm:top-8 sm:right-8">
+              {/* <ModeToggle /> */}
             </div>
-            <ModeToggle></ModeToggle>
           </div>
+          )}
+          {/* Design when there are jobs showing */}
+          {(jobs.length > 0)&& (
+            <div className="flex flex-col items-center justify-center text-center mt-10">
+            <h1 className="text-xl sm:text-5xl font-bold text-white drop-shadow-md ">
+              Open Positions
+            </h1>
+            <p className="text-slate-200/90 text-xl sm:text-xl mt-3">
+              Begin Your Career Now
+            </p>
+            
+            <div className="absolute top-4 right-4 sm:top-8 sm:right-8">
+              {/* <ModeToggle /> */}
+            </div>
+          </div>
+          )}
 
-          {(jobs.length > 0 || error) && (
-            <div className="mt-3 flex items-center gap-4 flex-wrap">
-              {jobs.length > 0 && <p className="text-muted-foreground text-sm font-medium">Results Found: {jobs.length}</p>}
+          {(jobs.length > 0 || error || detectedExpertise) && (
+            <div className="mt-10 flex flex-row items-center justify-around w-full ">
+              
+              <div className="w-full flex flex-col items-start justify-center space-y-2 pt-2">
+                {jobs.length > 0 && (
+                  <p className="text-white text-sm font-meduim tracking-wide">
+                    Results Found : {jobs.length} 
+                  </p>
+                )}
+                
+              </div>
+              {error &&
+              <div className="fixed w-full flex flex-col items-center justify-between space-y-2 z-[-1]">
+                <Card className=" group relative overflow-hidden bg-white/15 backdrop-blur-md border border-white shadow-xl p-5 mb-40"> 
+                    <p className="text-[#ff2222] text-xl font-bold">{error}</p>
+                </Card>
+              </div>
+                
+              }
               {detectedExpertise && (
-                <span className="inline-flex items-center rounded-full bg-indigo-50 dark:bg-indigo-900/40 px-3 py-1 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
-                  Detected Expertise: {detectedExpertise}
-                </span>
+                <div className="rounded-xl border border-white/40 px-6 py-2 shadow-xl bg-[#0e2931] whitespace-nowrap flex items-center">
+                  <p className="text-xs sm:text-sm font-bold text-white tracking-wider">
+                    Detected Expertise: 
+                    <span className="text-emerald-400 ml-2">
+                      {detectedExpertise}
+                    </span>
+                  </p>
+                </div>
               )}
-              {error && <p className="text-red-500 text-sm font-medium">{error}</p>}
             </div>
           )}
         </div>
 
-        <div className="flex-1 overflow-y-auto space-y-3 no-scroll-bar py-2 pr-2">
+        <div className=" overflow-y-auto space-y-3 no-scroll-bar">
           {currentJobs.map((item, index) => (
             <div key={indexOfFirstJob + index} onClick={() => setSelectedJob(item)} className="cursor-pointer">
-              <Card className="shadow-sm hover:shadow-md transition-shadow border-zinc-200 dark:border-zinc-800 m-1">
-                <CardHeader className="pb-3 px-4 pt-4 sm:px-6 sm:pt-6">
-                  <div className="flex flex-row items-start justify-between gap-4">
+              <Card className="group relative overflow-hidden transition-all hover:scale-[1.01] 
+                  bg-white/25 backdrop-blur-md border border-white/20 shadow-xl m-4 ">
+                <CardHeader className="">
+                  <div className="flex justify-between">
                     <div className="space-y-1">
-                      <CardTitle className="text-lg sm:text-xl font-semibold text-zinc-900 dark:text-zinc-100 leading-tight">
+                      <CardTitle className="text-lg sm:text-xl font-bold text-[#265473] tracking-tight">
                         {item.title || "Untitled Position"}
                       </CardTitle>
-                      <CardDescription className="text-sm font-medium text-zinc-500">
-                        {item.companyName || item.advertiser?.description || "Unknown Company"} • {item.locations?.[0]?.label || "Remote"}
+                      <CardDescription className="text-sm text-white">
+                        {item.companyName || item.advertiser?.description || "Unknown Company"} • {item.locations?.[0]?.label || "Location"} | <span className="font-extrabold">{item.workArrangements?.data[0]?.label.text || "Arrangements"}</span>
+
                       </CardDescription>
                     </div>
 
-                    <span className="shrink-0 inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
-                      {item.workTypes?.[0]}
-                    </span>
+                    <div className="flex items-center gap-4 shrink-0">
+                      <span className="shrink-0 inline-flex items-center rounded-lg bg-[#326DB0] px-3 py-1 text-xs font-bold text-white">
+                        {item.workTypes?.[0] || "Full-Time"} 
+                      </span>
+                      <p className="text-xs text-white/60">
+                        {item.listingDateDisplay || "Listing Date"}
+                      </p>
+                    </div>
                   </div>
                 </CardHeader>
-
-                <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6 pt-0">
-                  <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed line-clamp-2">
-                    {item.teaser || "No description available."}
+                <CardContent >
+                  <p className="text-xs text-white/60">
+                    {item.teaser || "Description"}
                   </p>
+                  
                 </CardContent>
               </Card>
             </div>
           ))}
           {!isPending && jobs.length === 0 && !error && (
             <div className="text-center py-16 px-4">
-              <UploadCloud className="mx-auto h-12 w-12 text-zinc-200 dark:text-zinc-800 mb-4" />
-              <p className="text-zinc-600 dark:text-zinc-300 text-lg font-medium">
-                {fileName ? "No matching jobs found" : "Ready to find your next role?"}
-              </p>
-              <p className="text-zinc-400 dark:text-zinc-500 mt-1 max-w-sm mx-auto">
-                {fileName
-                  ? "Try uploading a different resume or wait for new positions."
-                  : "Upload your resume using the form below to instantly discover top roles that fit your experience."}
-              </p>
+              <Card className="group relative overflow-hidden bg-white/25 backdrop-blur-md border border-white shadow-xl m-4 ">
+                  <p className="text-[#0E2931] dark:text-[#0E2931] text-2xl font-extrabold ">
+                    {fileName ? "No matching jobs found" : "Submit Your Application"}
+                  </p>
+                  <p className="text-[#0E2931] dark:text-[#0E2931] mt-1 max-w-sm mx-auto">
+                    {fileName
+                      ? "Try uploading a different resume or wait for new positions."
+                      : "Upload your resume or paste portfolio link below."}
+                  </p>
+              </Card>
+              
             </div>
           )}
           {isPending && (
@@ -217,14 +274,14 @@ export default function JobBoard() {
         </div>
 
         {totalPages > 1 && !isPending && (
-          <div className="shrink-0 border-t border-zinc-200 dark:border-zinc-800 flex justify-center items-center gap-2 py-3 mt-1">
+          <div className="shrink-0 border-t border-white/20 flex justify-center items-center gap-2 py-2 mt-1">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
             >
-              Prev
+              <ChevronLeft/>
             </Button>
 
             <div className="flex gap-1 flex-wrap justify-center">
@@ -233,7 +290,7 @@ export default function JobBoard() {
                   key={page}
                   variant={currentPage === page ? "default" : "ghost"}
                   size="sm"
-                  className="w-8 h-8 p-0 rounded-full"
+                  className="w-8 h-8 p-0 rounded-full "
                   onClick={() => setCurrentPage(page)}
                 >
                   {page}
@@ -247,69 +304,68 @@ export default function JobBoard() {
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
             >
-              Next
+              <ChevronRight/>
             </Button>
           </div>
         )}
 
-        <div className="shrink-0 pb-2">
-          <div className="border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 sm:p-4 shadow-sm">
+        <div className="shrink-0 pt-2">
+          <div className="border border-white rounded-xl p-4 shadow-sm bg-[#0E2931] mb-10">
             <form action={handleResumeSubmit} className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <input type="file" name="resume" className="hidden" ref={fileInputRef} onChange={handleFileChange} accept=".pdf,.docx" />
 
               <div className="flex-1 text-left w-full sm:w-auto">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                  <div>
-                    <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">AI Role Match</h3>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Upload resume or paste portfolio link.</p>
-                  </div>
-
-                  {!fileName && (
+                  <div className="flex-grow space-y-2" >
+                    <h3 className="text-xl font-semibold text-zinc-100 px-2">AI Role Match</h3>
+                    <p className="text-xs text-zinc-500 mt-0.5"></p>
+                    {!fileName && (
                     <Input
                       type="url"
                       name="portfolioUrl"
                       placeholder="https://yourportfolio.com"
                       value={portfolioUrl}
                       onChange={(e) => setPortfolioUrl(e.target.value)}
-                      className="h-8 text-xs max-w-xs flex-1"
+                      className="w-full h-12 rounded-xl bg-slate-700/50 border border-slate-600/50 text-white placeholder:text-slate-400 focus:ring-2 focus:ring-[#3EA8A7] outline-none transition"
                     />
                   )}
+                  </div>
                 </div>
 
-                {fileName && (
-                  <div className="flex items-center gap-2 mt-2">
-                    <p className="text-xs text-green-600 font-medium flex items-center gap-1">
-                      <Send className="w-3 h-3" /> {fileName}
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setFileName(null)
-                        setPortfolioUrl("")
-                        setDetectedExpertise(null)
-                        setJobs([])
-                        setCurrentPage(1)
-                        if (fileInputRef.current) fileInputRef.current.value = ""
-                        localStorage.removeItem("resume_filename")
-                        localStorage.removeItem("job_list")
-                        localStorage.removeItem("current_page")
-                        localStorage.removeItem("detected_expertise")
-                      }}
-                      className="text-zinc-400 hover:text-red-500 transition-colors p-0.5 rounded-full hover:bg-red-50 dark:hover:bg-red-950 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-red-200"
-                      title="Remove file"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                )}
+                  {fileName && (
+                    <div className="flex items-center gap-2 mt-2">
+                      <p className="text-s text-green-600 font-medium flex items-center gap-1">
+                        <Send className="w-3 h-3" /> {fileName}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFileName(null)
+                          setPortfolioUrl("")
+                          setDetectedExpertise(null)
+                          setJobs([])
+                          setCurrentPage(1)
+                          if (fileInputRef.current) fileInputRef.current.value = ""
+                          localStorage.removeItem("resume_filename")
+                          localStorage.removeItem("job_list")
+                          localStorage.removeItem("current_page")
+                          localStorage.removeItem("detected_expertise")
+                        }}
+                        className="text-zinc-400 hover:text-red-500 transition-colors p-0.5 rounded-full hover:bg-red-950 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-red-200"
+                        title="Remove file"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
               </div>
 
-              <div className="flex items-center gap-2 w-full sm:w-[auto]">
-                <Button type="button" variant="outline" size="sm" onClick={handleUploadClick} disabled={isPending || !!portfolioUrl}>
+              <div className="flex flex-col items-center gap-2 w-full sm:w-[auto]">
+                <Button type="button" className="bg-[#91B032] text-white w-full hover:bg-[#C5F042]" size="sm" onClick={handleUploadClick} disabled={isPending || !!portfolioUrl}>
                   <UploadCloud className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">{fileName ? "Change" : "Upload"}</span>
                 </Button>
-                <Button type="submit" size="sm" variant="default" disabled={(!fileName && !portfolioUrl) || isPending}>
+                <Button type="submit" size="sm" className="bg-white w-full text-[#0E2931]" disabled={(!fileName && !portfolioUrl) || isPending}>
                   {isPending ? "AI Parsing..." : "Find"}
                 </Button>
               </div>
@@ -321,7 +377,7 @@ export default function JobBoard() {
 
       {selectedJob && (
         <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm" onClick={() => { setSelectedJob(null); setIsInterviewing(false); }}>
-          <div className={`bg-white dark:bg-zinc-950 rounded-xl shadow-xl w-full ${isInterviewing ? 'max-w-4xl h-[85vh]' : 'max-w-2xl max-h-[90vh]'} flex flex-col overflow-hidden border border-zinc-200 dark:border-zinc-800 transition-all duration-300`} onClick={e => e.stopPropagation()}>
+          <div className={`bg-[#0E2931] rounded-4xl shadow-xl w-full ${isInterviewing ? 'max-w-4xl h-[85vh]' : 'max-w-4xl max-h-[90vh]'} flex flex-col overflow-hidden border-3 border-white/70 transition-all duration-300`} onClick={e => e.stopPropagation()}>
             
             {isInterviewing ? (
               <InterviewChat 
