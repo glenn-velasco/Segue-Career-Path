@@ -142,16 +142,18 @@ export default function JobBoard() {
     bg-gradient-to-b from-[#0e2931] via-[#3ea8a7] to-[#0e2931]">
 
       <div 
-        className="absolute inset-0 z-0 opacity-40 pointer-events-none"
+        className="absolute inset-0 z-0 opacity-35 pointer-events-none" 
         style={{ 
           backgroundImage: `url('blob_bg.svg')`, 
           backgroundSize: 'cover',
           backgroundPosition: 'center' 
         }}
       />
-      <div className="mx-auto my-auto w-full max-w-3xl flex flex-col justify-center h-full min-h-0 m">
+        
+      <div className="mx-auto my-auto w-full max-w-3xl flex flex-col justify-center h-full min-h-0 m z-1">
         <div className="shrink-0">
-          <div className="flex flex-col items-center justify-center text-center">
+          {(jobs.length == 0 )&& (
+            <div className="flex flex-col items-center justify-center text-center">
             <h1 className="text-3xl sm:text-6xl font-bold text-white drop-shadow-md">
               Begin Your Career Now
             </h1>
@@ -163,23 +165,44 @@ export default function JobBoard() {
               {/* <ModeToggle /> */}
             </div>
           </div>
+          )}
+          {/* Design when there are jobs showing */}
+          {(jobs.length > 0)&& (
+            <div className="flex flex-col items-center justify-center text-center mt-10">
+            <h1 className="text-xl sm:text-5xl font-bold text-white drop-shadow-md ">
+              Open Positions
+            </h1>{error}
+            <p className="text-slate-200/90 text-xl sm:text-xl mt-3">
+              Begin Your Career Now
+            </p>
+            
+            <div className="absolute top-4 right-4 sm:top-8 sm:right-8">
+              {/* <ModeToggle /> */}
+            </div>
+          </div>
+          )}
 
           {(jobs.length > 0 || error || detectedExpertise) && (
-            <div className="mt-10 flex flex-row items-center justify-between w-full px-1">
+            <div className="mt-10 flex flex-row items-center justify-around w-full ">
               
-              <div className="w-full flex flex-col items-center justify-center space-y-2 my-4">
+              <div className="w-full flex flex-col items-start justify-center space-y-2 pt-2">
                 {jobs.length > 0 && (
-                  <p className="text-slate-300/80 text-sm font-semibold tracking-wide">
-                    Results Found: {jobs.length}
+                  <p className="text-white text-sm font-meduim tracking-wide">
+                    Results Found : {jobs.length} 
                   </p>
                 )}
-                <Card className="group relative overflow-hidden bg-white/25 backdrop-blur-md border border-white shadow-xl m-4 p-5"> 
-                  {error && <p className="text-red-600 text-xl font-medium">{error}</p>}
+                
+              </div>
+              {error &&
+              <div className="absolute w-full flex flex-col items-center justify-between space-y-2">
+                <Card className=" group relative overflow-hidden bg-white/15 backdrop-blur-md border border-white shadow-xl m-4 p-5"> 
+                    <p className="text-[#bd1212] text-xl font-bold">{error}</p>
                 </Card>
               </div>
-
+                
+              }
               {detectedExpertise && (
-                <div className="rounded-xl border border-white/20 px-4 py-2 shadow-xl transition-all bg-[#0e2931]/80">
+                <div className="rounded-xl border border-white/40 px-6 py-2 shadow-xl bg-[#0e2931] whitespace-nowrap flex items-center">
                   <p className="text-xs sm:text-sm font-bold text-white tracking-wider">
                     Detected Expertise: 
                     <span className="text-emerald-400 ml-2">
@@ -196,33 +219,34 @@ export default function JobBoard() {
           {currentJobs.map((item, index) => (
             <div key={indexOfFirstJob + index} onClick={() => setSelectedJob(item)} className="cursor-pointer">
               <Card className="group relative overflow-hidden transition-all hover:scale-[1.01] 
-                  bg-white/10 backdrop-blur-md border border-white/20 shadow-xl m-4 ">
-                <CardHeader className="pb-3 px-4 pt-4 sm:px-6 sm:pt-6">
+                  bg-white/25 backdrop-blur-md border border-white/20 shadow-xl m-4 ">
+                <CardHeader className="">
                   <div className="flex justify-between">
                     <div className="space-y-1">
-                      <CardTitle className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                      <CardTitle className="text-lg sm:text-xl font-bold text-[#265473] tracking-tight">
                         {item.title || "Untitled Position"}
                       </CardTitle>
-                      <CardDescription className="text-sm italic text-slate-300/80">
-                        {item.companyName || item.advertiser?.description || "Unknown Company"} • {item.locations?.[0]?.label || "Remote"}
+                      <CardDescription className="text-sm text-white">
+                        {item.companyName || item.advertiser?.description || "Unknown Company"} • {item.locations?.[0]?.label || "Location"} | <span className="font-extrabold">{item.workArrangements.data[0].label.text || "Arrangements"}</span>
 
                       </CardDescription>
                     </div>
 
-                    <div className="flex flex-col items-end gap-2">
+                    <div className="flex items-center gap-4 shrink-0">
                       <span className="shrink-0 inline-flex items-center rounded-lg bg-[#326DB0] px-3 py-1 text-xs font-bold text-white">
                         {item.workTypes?.[0] || "Full-Time"} 
                       </span>
+                      <p className="text-xs text-white/60">
+                        {item.listingDateDisplay || "Listing Date"}
+                      </p>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6 pt-0 flex justify-between items-end">
-                  <p className="text-sm font-bold text-white/90">
-                    {item.locations?.[0]?.label || "Remote"}
-                  </p>
+                <CardContent >
                   <p className="text-xs text-white/60">
-                    {item.listingDateDisplay || "Listing Date"}
+                    {item.teaser || "Description"}
                   </p>
+                  
                 </CardContent>
               </Card>
             </div>
@@ -250,7 +274,7 @@ export default function JobBoard() {
         </div>
 
         {totalPages > 1 && !isPending && (
-          <div className="shrink-0 border-t border-zinc-200 dark:border-zinc-800 flex justify-center items-center gap-2 py-3 mt-1">
+          <div className="shrink-0 border-t border-white/20 flex justify-center items-center gap-2 py-3 mt-1">
             <Button
               variant="ghost"
               size="sm"
