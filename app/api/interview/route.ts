@@ -26,7 +26,8 @@ Instructions:
 4. Evaluate their answer briefly, provide a short encouraging feedback or correction if necessary, and then ask the next relevant question.
 5. Keep your responses concise (under 150 words).
 6. Start the interview by introducing yourself briefly as Alice and asking the very first question.
-7. If the candidate asks to stop or end the interview, conclude gracefully.`;
+7. If the candidate asks to stop or end the interview, conclude gracefully and give the candidate feedback.
+8. Stay in Character: Do not answer unrelated or "out-of-character" questions. If the candidate tries to change the subject or ask for help with an answer, politely redirect them back to the interview.`;
 
         // The Gemini API requires contents to be non-empty. 
         // If it's the start of the interview, provide a seamless starter prompt behind the scenes.

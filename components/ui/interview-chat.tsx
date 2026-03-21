@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "./button";
 import { Input } from "./input";
-import { Send, User, Bot, Loader2, Volume2, VolumeX, Mic } from "lucide-react";
+import { Send, User, Bot, Loader2, Volume2, VolumeX, Mic, Ghost } from "lucide-react";
 
 interface InterviewChatProps {
   jobTitle: string;
@@ -180,81 +180,91 @@ export function InterviewChat({ jobTitle, companyName, jobDescription, onClose }
   };
 
   return (
-    <div className="flex flex-col h-full overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-200 dark:border-zinc-800 shrink-0">
-        <div>
-          <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-            <Bot className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-            Alice (AI Interviewer)
-          </h3>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            Mock interview for {jobTitle}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={toggleMute} 
-            className="text-xs h-8 px-2 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
-            title={isMuted ? "Unmute Alice" : "Mute Alice"}
-          >
-            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </Button>
-          {onClose && (
-            <Button variant="ghost" size="sm" onClick={onClose} className="text-xs h-8">
-              End Interview
+    <div className="flex flex-col h-full overflow-hidden rounded-lg bg-[#C0C0C0]/50">
+      <div className="border-b-4 border-white/25 mx-4">
+        <div className="flex items-center justify-between px-4 py-5 border-b border-zinc-200 dark:border-zinc-800 shrink-0 bg-[#163D44] my-5 mx-1 rounded-2xl">
+          <div className="flex justify-center items-center">
+            <Bot className="w-10 h-10" />
+            <div className="pl-3">
+              <h3 className="font-semibold text-white flex items-center gap-2 text-2xl">
+                Alice (AI Interviewer)
+              </h3>
+              <p className="text-xs text-zinc-300">
+                Mock interview for {jobTitle}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button 
+              size="sm" 
+              onClick={toggleMute} 
+              className="bg-white/0 text-xs h-8 px-2 text-white hover:bg-[#308182]"
+              title={isMuted ? "Unmute Alice" : "Mute Alice"}
+            >
+              {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
             </Button>
-          )}
+            {onClose && (
+              <Button size="sm" onClick={onClose} className="text-xs h-8  border border-white/50 text-white bg-[#981616] hover:bg-[#681010] hover:border-white/70 hover:text-red-300">
+                End Interview
+              </Button>
+            )}
+          </div>
         </div>
       </div>
+      
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto px-5 py-3 space-y-4 no-scroll-bar mt-2">
         {messages.map((msg, index) => (
           <div
             key={index}
             className={`flex items-start gap-3 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"
               }`}
           >
+              <div
+                className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${msg.role === "user"
+                    ? "bg-[#265473] text-white"
+                    : "bg-[#163D44] text-white"
+                  }`}
+              >
+                {msg.role === "user" ? <User className="w-6 h-6"  /> : <Bot className="w-6 h-6 " />}
+              </div>
+
+            <div className={`flex flex-col justify-center w-full ${msg.role === "user" ? "items-end" : "items-start"} `}>       
+                <p className="text-sm text-white pb-1">
+                  {msg.role === "user" ? "You" : "Alice (AI)"}
+                </p> 
             <div
-              className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${msg.role === "user"
-                  ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
-                  : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+              className={`max-w-[80%] w-fit rounded-4xl px-5 py-3 text-sm wrap-break-word overflow-hidden ${msg.role === "user"
+                  ? "bg-[#265473] :text-white rounded-tr-none"
+                  : "bg-[#163D44] border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 rounded-tl-none whitespace-pre-wrap"
                 }`}
-            >
-              {msg.role === "user" ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
-            </div>
-            <div
-              className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm ${msg.role === "user"
-                  ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 rounded-tr-none"
-                  : "bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 rounded-tl-none whitespace-pre-wrap"
-                }`}
-            >
-              {msg.parts[0].text}
+              >
+                {msg.parts[0].text}
+              </div>
             </div>
           </div>
         ))}
         {isLoading && (
           <div className="flex items-start gap-3">
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 flex items-center justify-center">
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#265473] text-white flex items-center justify-center">
               <Bot className="w-4 h-4" />
             </div>
-            <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-2xl rounded-tl-none px-4 py-3 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-              <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-              <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></span>
+            <div className="bg-[#163D44] border border-zinc-700 rounded-2xl rounded-tl-none px-4 py-3 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 bg-[#91B032] rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+              <span className="w-1.5 h-1.5 bg-[#91B032] rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+              <span className="w-1.5 h-1.5 bg-[#91B032] rounded-full animate-bounce"></span>
             </div>
           </div>
         )}
         {error && (
-          <div className="text-center p-2 text-sm text-red-500 bg-red-50 dark:bg-red-950/30 rounded-lg">
+          <div className="text-center p-2 text-sm text-red-600 bg-red-300 rounded-lg">
             {error}
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="shrink-0 p-3 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800">
+      <div className="shrink-0 p-2 border-white/40 border-t-4 pt-7 m-5">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -268,25 +278,24 @@ export function InterviewChat({ jobTitle, companyName, jobDescription, onClose }
             onKeyDown={handleKeyDown}
             placeholder={isRecording ? "Listening..." : "Type your answer..."}
             disabled={isLoading}
-            className={`flex-1 min-h-[44px] bg-zinc-50 dark:bg-zinc-950 pl-4 py-3 rounded-full border-zinc-200 dark:border-zinc-800 focus-visible:ring-blue-500 pr-24 text-sm transition-colors ${isRecording ? 'border-red-400 dark:border-red-500 focus-visible:ring-red-500 bg-red-50/50 dark:bg-red-950/20' : ''}`}
+            className={`flex-1 min-h-[44px] bg-white pl-4 py-3 rounded-fullborder-zinc-800 focus-visible:ring-[#308182] pr-24 text-sm text-black transition-colors placeholder:text-[#308182]/70 transition-all${isRecording ? 'border-blue-400 focus-visible:ring-[#308182] bg-[#cfebeb] placeholder:text-[#265473]/80' : ''}`}
           />
           <div className="absolute right-1 bottom-1 flex gap-1">
             <Button
               type="button"
               size="icon"
-              variant="ghost"
               onClick={toggleRecording}
               disabled={isLoading}
-              className={`w-[36px] h-[36px] rounded-full shrink-0 transition-colors ${isRecording ? 'text-red-600 bg-red-100 hover:bg-red-200 dark:text-red-400 dark:bg-red-900/40 dark:hover:bg-red-900/60' : 'text-zinc-500 hover:bg-zinc-200 dark:text-zinc-400 dark:hover:bg-zinc-800'}`}
+              className={`w-9 h-9 rounded-full shrink-0 transition-colors ${isRecording ? 'text-white bg-[#308182] hover:bg-[#265473]'  : 'text-[#265473] bg-white/0 hover:bg-[#308182]'}`}
               title={isRecording ? "Stop recording" : "Start speaking"}
             >
-              <Mic className="w-4 h-4" />
+              <Mic className="w-5 h-5" />
             </Button>
             <Button
               type="submit"
               size="icon"
               disabled={!input.trim() || isLoading}
-              className="w-[36px] h-[36px] rounded-full shrink-0 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+              className="w-[36px] h-[36px] rounded-full shrink-0 bg-[#308182] hover:bg-blue-700 text-white shadow-sm"
             >
               {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 shadow-[0_2px_4px_rgba(0,0,0,0.1)] -ml-0.5" />}
             </Button>
