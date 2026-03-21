@@ -47,18 +47,18 @@ export default function JobBoard() {
   }, [])
 
 //  Add this block after your second useEffect
-  // React.useEffect(() => {
-  //   if (isMounted && portfolioUrl === "" && !fileName) {
-  //     // Clear all results from the UI
-  //     setJobs([]);
-  //     setDetectedExpertise(null);
-  //     setError(null);
-  //     // Clear memory so it doesn't come back on refresh
-  //     localStorage.removeItem("job_list");
-  //     localStorage.removeItem("detected_expertise");
-  //     localStorage.removeItem("current_page");
-  //   }
-  // }, [portfolioUrl, fileName, isMounted]);
+  React.useEffect(() => {
+    if (isMounted && portfolioUrl === "" && !fileName) {
+      // Clear all results from the UI
+      setJobs([]);
+      setDetectedExpertise(null);
+      setError(null);
+      // Clear memory so it doesn't come back on refresh
+      localStorage.removeItem("job_list");
+      localStorage.removeItem("detected_expertise");
+      localStorage.removeItem("current_page");
+    }
+  }, [portfolioUrl, fileName, isMounted]);
 
   React.useEffect(() => {
     if (!isMounted) return
