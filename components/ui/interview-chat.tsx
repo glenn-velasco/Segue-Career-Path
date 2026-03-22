@@ -24,20 +24,27 @@ export function InterviewChat({ jobTitle, companyName, jobDescription, onClose }
   const [error, setError] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+  const hasInitialized = useRef(false);
 
-  // Auto-scroll to bottom of chat
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
-  // Start interview on mount
   useEffect(() => {
-    if (messages.length === 0) {
-      sendMessage("", true); // trigger initial message
+    if (messages.length === 0 && !hasInitialized.current) {
+      hasInitialized.current = true;
+      sendMessage("", true); 
     }
-    
+
+    if ('speechSynthesis' in window) {
+      const updateVoices = () => setVoices(window.speechSynthesis.getVoices());
+      updateVoices();
+      window.speechSynthesis.onvoiceschanged = updateVoices;
+    }
+
     return () => {
       // Stop speaking when component unmounts
       if ('speechSynthesis' in window) {
@@ -88,7 +95,7 @@ export function InterviewChat({ jobTitle, companyName, jobDescription, onClose }
       recognitionRef.current.stop();
       setIsRecording(false);
     } else {
-      setInput(""); // clear input to capture new voice cleanly
+      setInput("");
       recognitionRef.current.start();
       setIsRecording(true);
     }
@@ -96,22 +103,27 @@ export function InterviewChat({ jobTitle, companyName, jobDescription, onClose }
 
   const speak = (text: string) => {
     if (isMuted || !('speechSynthesis' in window)) return;
-    
+
     window.speechSynthesis.cancel(); // Cancel any ongoing speech
-    
+
     const utterance = new SpeechSynthesisUtterance(text);
-    // Find a good English female voice if possible to match "Alice"
-    const voices = window.speechSynthesis.getVoices();
+
     const femaleVoice = voices.find(v => v.name.includes('Female') || v.name.includes('Zira') || v.name.includes('Samantha') || v.name.includes('Google UK English Female'));
     if (femaleVoice) {
       utterance.voice = femaleVoice;
     }
-    
-    // Slight adjustments to make it sound more conversational
+
     utterance.rate = 1.05;
-    utterance.pitch = 1.0;
-    
+    utterance.pitch = -2.0;
+
     window.speechSynthesis.speak(utterance);
+
+    if (/Android/i.test(navigator.userAgent) && /Chrome/i.test(navigator.userAgent)) {
+      setTimeout(() => {
+        window.speechSynthesis.pause();
+        window.speechSynthesis.resume();
+      }, 100);
+    }
   };
 
   const toggleMute = () => {
@@ -151,7 +163,7 @@ export function InterviewChat({ jobTitle, companyName, jobDescription, onClose }
       });
 
       if (!response.ok) {
-        throw new Error("Failed to get response");
+        throw new Error("Unknown Error Occured");
       }
 
       const data = await response.json();
@@ -195,9 +207,9 @@ export function InterviewChat({ jobTitle, companyName, jobDescription, onClose }
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button 
-              size="sm" 
-              onClick={toggleMute} 
+            <Button
+              size="sm"
+              onClick={toggleMute}
               className="bg-white/0 text-xs h-8 px-2 text-white hover:bg-[#308182]"
               title={isMuted ? "Unmute Alice" : "Mute Alice"}
             >
@@ -211,7 +223,7 @@ export function InterviewChat({ jobTitle, companyName, jobDescription, onClose }
           </div>
         </div>
       </div>
-      
+
 
       <div className="flex-1 overflow-y-auto px-5 py-3 space-y-4 no-scroll-bar mt-2">
         {messages.map((msg, index) => (
@@ -220,24 +232,24 @@ export function InterviewChat({ jobTitle, companyName, jobDescription, onClose }
             className={`flex items-start gap-3 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"
               }`}
           >
-              <div
-                className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${msg.role === "user"
-                    ? "bg-[#265473] text-white"
-                    : "bg-[#163D44] text-white"
-                  }`}
-              >
-                {msg.role === "user" ? <User className="w-6 h-6"  /> : <Bot className="w-6 h-6 " />}
-              </div>
-
-            <div className={`flex flex-col justify-center w-full ${msg.role === "user" ? "items-end" : "items-start"} `}>       
-                <p className="text-sm text-white pb-1">
-                  {msg.role === "user" ? "You" : "Alice (AI)"}
-                </p> 
             <div
-              className={`max-w-[80%] w-fit rounded-4xl px-5 py-3 text-sm wrap-break-word overflow-hidden ${msg.role === "user"
+              className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${msg.role === "user"
+                ? "bg-[#265473] text-white"
+                : "bg-[#163D44] text-white"
+                }`}
+            >
+              {msg.role === "user" ? <User className="w-6 h-6" /> : <Bot className="w-6 h-6 " />}
+            </div>
+
+            <div className={`flex flex-col justify-center w-full ${msg.role === "user" ? "items-end" : "items-start"} `}>
+              <p className="text-sm text-white pb-1">
+                {msg.role === "user" ? "You" : "Alice (AI)"}
+              </p>
+              <div
+                className={`max-w-[80%] w-fit rounded-4xl px-5 py-3 text-sm wrap-break-word overflow-hidden ${msg.role === "user"
                   ? "bg-[#265473] :text-white rounded-tr-none"
                   : "bg-[#163D44] border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 rounded-tl-none whitespace-pre-wrap"
-                }`}
+                  }`}
               >
                 {msg.parts[0].text}
               </div>
@@ -286,7 +298,7 @@ export function InterviewChat({ jobTitle, companyName, jobDescription, onClose }
               size="icon"
               onClick={toggleRecording}
               disabled={isLoading}
-              className={`w-9 h-9 rounded-full shrink-0 transition-colors ${isRecording ? 'text-white bg-[#308182] hover:bg-[#265473]'  : 'text-[#265473] bg-white/0 hover:bg-[#308182]'}`}
+              className={`w-9 h-9 rounded-full shrink-0 transition-colors ${isRecording ? 'text-white bg-[#308182] hover:bg-[#265473]' : 'text-[#265473] bg-white/0 hover:bg-[#308182]'}`}
               title={isRecording ? "Stop recording" : "Start speaking"}
             >
               <Mic className="w-5 h-5" />
