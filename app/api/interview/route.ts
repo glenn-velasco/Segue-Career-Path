@@ -35,19 +35,34 @@ Instructions:
             { role: 'user', parts: [{ text: "Hello, I'm ready for the interview. Please start." }] }
         ];
 
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: chatContents,
-            config: {
-                systemInstruction: systemInstruction,
-                temperature: 0.7,
-            }
-        });
+        const fallbackModels = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.5-pro'];
+        let response;
+        let lastError;
 
-        if (response.text) {
+        for (const model of fallbackModels) {
+            try {
+                response = await ai.models.generateContent({
+                    model: model,
+                    contents: chatContents,
+                    config: {
+                        systemInstruction: systemInstruction,
+                        temperature: 0.7,
+                    }
+                });
+                
+                if (response?.text) {
+                    break;
+                }
+            } catch (error: any) {
+                console.warn(`Model ${model} failed, trying next...`, error.message);
+                lastError = error;
+            }
+        }
+
+        if (response?.text) {
             return NextResponse.json({ text: response.text });
         } else {
-            return NextResponse.json({ error: "No response text generated" }, { status: 500 });
+            return NextResponse.json({ error: lastError?.message || "All models failed to generate a response" }, { status: 500 });
         }
 
     } catch (error: any) {
