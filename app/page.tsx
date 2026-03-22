@@ -21,6 +21,7 @@ export default function JobBoard() {
   const [detectedExpertise, setDetectedExpertise] = React.useState<string | null>(null)
   const [expertiseList, setExpertiseList] = React.useState<string[]>([])
   const [isPending, setIsPending] = React.useState<boolean>(false)
+  const [isDragging, setIsDragging] = React.useState<boolean>(false)
 
   const ITEMS_PER_PAGE = 5;
   const [error, setError] = React.useState<string | null>(null)
@@ -92,6 +93,38 @@ export default function JobBoard() {
       localStorage.removeItem("expertise_list")
     }
   }, [fileName, jobs, currentPage, detectedExpertise, expertiseList, isMounted])
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      if (file.name.endsWith('.pdf') || file.name.endsWith('.docx')) {
+        setFileName(file.name);
+        if (fileInputRef.current) {
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          fileInputRef.current.files = dataTransfer.files;
+        }
+      } else {
+        setError("Please upload only PDF or DOCX files.");
+      }
+    }
+  };
 
   const handleUploadClick = () => {
     fileInputRef.current?.click()
@@ -370,8 +403,22 @@ export default function JobBoard() {
           </div>
         )}
 
-        <div className="shrink-0 pt-2">
-          <div className="border border-white rounded-xl p-4 shadow-sm bg-[#0E2931] mb-10">
+        <div className="shrink-0 pt-2 w-full">
+          <div 
+            className={`relative overflow-hidden border-2 rounded-xl p-4 shadow-sm transition-all duration-200 mb-10 ${
+              isDragging ? "bg-[#326DB0]/30 border-[#3ea8a7] border-dashed scale-[1.02]" : "bg-[#0E2931] border-white/50 border-solid hover:border-white/80"
+            }`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            {isDragging && (
+              <div className="absolute inset-0 z-50 flex items-center justify-center bg-[#0e2931]/90 backdrop-blur-sm pointer-events-none">
+                <p className="text-xl sm:text-2xl font-bold text-[#3ea8a7] flex items-center gap-3">
+                  <UploadCloud className="w-8 h-8 sm:w-10 sm:h-10 animate-bounce" /> Drop your resume here!
+                </p>
+              </div>
+            )}
             <form action={handleResumeSubmit} className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <input type="file" name="resume" className="hidden" ref={fileInputRef} onChange={handleFileChange} accept=".pdf,.docx" />
 
